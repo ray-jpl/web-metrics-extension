@@ -1,10 +1,13 @@
 import React from 'react';
 import './App.css';
+import WebsitesList from './components/WebsiteList';
+
 
 function App() {
   return (
-    <div className="App">
+    <div className="text-center w-96">
       Hello World
+      <WebsitesList/>
     </div>
   );
 }
