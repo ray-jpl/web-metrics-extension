@@ -1,6 +1,8 @@
 const path = require("path");
 const HTMLPlugin = require("html-webpack-plugin");
-const CopyPlugin = require("copy-webpack-plugin")
+const CopyPlugin = require("copy-webpack-plugin");
+const tailwindcss = require("tailwindcss");
+const autoprefixer = require("autoprefixer");
 
 module.exports = {
     entry: {
@@ -22,12 +24,16 @@ module.exports = {
                exclude: /node_modules/,
             },
             {
-              exclude: /node_modules/,
-              test: /\.css$/i,
-               use: [
-                  "style-loader",
-                  "css-loader"
-               ]
+              use: ["style-loader", "css-loader", {
+                loader: "postcss-loader",
+                options: {
+                  postcssOptions: {
+                    ident: "postcss",
+                    plugins: [tailwindcss, autoprefixer],
+                  },
+                }
+              }],
+              test: /\.css$/i
             },
         ],
     },
