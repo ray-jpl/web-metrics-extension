@@ -32,7 +32,7 @@ const WebsitesList: React.FC = () => {
       {
         Object.entries(websiteList).sort(([,a],[,b]) => b-a).map((key) => {
           return (          
-          <ul className='flex justify-between px-8 my-2 bg-red-100'>
+          <ul className='flex justify-between px-8 py-4 my-2 bg-red-100'>
             <div>
               {/* <img src={key[0]} alt={`${key[0]} icon`} /> */}
               <p>{`${key[0]}`}</p>
