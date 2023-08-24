@@ -14,7 +14,8 @@
   },
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "nativeMessaging"
   ],
   "background": {
     "service_worker": "js/background.js"

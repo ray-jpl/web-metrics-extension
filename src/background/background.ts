@@ -1,6 +1,18 @@
 import { SiteInfo } from "../types";
-// Function to update the time spent on each website every second
 
+// Only transmit messages if popup is open
+let isPopupOpen = false;
+chrome.runtime.onConnect.addListener((port) => {
+    if (port.name === "popup") {
+        isPopupOpen = true;
+
+        port.onDisconnect.addListener(() => {
+            isPopupOpen = false;
+        });
+    }
+});
+
+// Function to update the time spent on each website every second
 function updateWebsiteTimes() {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     var currentTab = tabs[0];
@@ -8,13 +20,16 @@ function updateWebsiteTimes() {
       var url: string = new URL(currentTab.url).hostname;
       chrome.storage.local.get(url, function (result) {
         const siteInfo = result[url];
-        console.log(siteInfo);
         let curData: SiteInfo = {
           icon: (currentTab.favIconUrl != null) ? currentTab.favIconUrl : "",
           time: (siteInfo && siteInfo.time) ? siteInfo.time + 1 : 1,
         };
 
-        chrome.storage.local.set({ [url]: curData });
+        chrome.storage.local.set({ [url]: curData }, function() {
+          if (isPopupOpen) {
+            chrome.runtime.sendMessage({ url: url, data: curData });
+          }
+        });
       });
     }
   });
