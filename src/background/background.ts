@@ -12,12 +12,16 @@ chrome.runtime.onConnect.addListener((port) => {
     }
 });
 
+var PREFIX = "www.";
 // Function to update the time spent on each website every second
 function updateWebsiteTimes() {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     var currentTab = tabs[0];
     if (currentTab && currentTab.url && currentTab.url.startsWith("http")) {
       var url: string = new URL(currentTab.url).hostname;
+      if (url.startsWith(PREFIX)) {
+        url = url.slice(PREFIX.length);
+      }
       chrome.storage.local.get(url, function (result) {
         const siteInfo = result[url];
         let curData: SiteInfo = {
