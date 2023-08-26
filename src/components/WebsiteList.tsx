@@ -10,7 +10,6 @@ const MAX_SHOWN_ITEMS = 5;
 const WebsitesList: React.FC = () => {
   const [websiteList, setWebsiteList] = useState<WebsiteData>({});
   const [currentUrl, setCurrentUrl] = useState<string>("");
-  const [isListening, setIsListening] = useState<boolean>(false)
   const port = chrome.runtime.connect({ name: "popup" });
   window.addEventListener('focus', function () {
     // Initialise data on load.
@@ -36,11 +35,22 @@ const WebsitesList: React.FC = () => {
       setWebsiteList(data);
     });
   };
+
   return(
     <div>
+      { websiteList[currentUrl] &&
+        <ul className={"flex justify-between px-8 py-4 my-2 bg-red-100 font-bold border"}>
+          <div className='flex items-center'>
+            <img src={websiteList[currentUrl].icon} alt={`${currentUrl} active icon`} className='h-6 w-6 mr-2'/>
+            <p >{currentUrl}</p>
+          </div>
+          <div className='flex items-center'>{`${Math.floor(websiteList[currentUrl].time / 3600).toString().padStart(2, "0")}:${Math.floor((websiteList[currentUrl].time % 3600) / 60).toString().padStart(2, "0")}:${(websiteList[currentUrl].time % 60).toString().padStart(2, "0")}`}</div>
+        </ul>
+      }
+      <h1>Top {Math.min(Object.keys(websiteList).length, MAX_SHOWN_ITEMS)} sites</h1>
       {Object.entries(websiteList).sort(([,a],[,b]) => b.time-a.time).slice(0, MAX_SHOWN_ITEMS).map((key) => {
         return (          
-          <ul className={`flex justify-between px-8 py-4 my-2 bg-red-100 ${key[0] === currentUrl ? "font-bold" : ""}`}>
+          <ul className={`flex justify-between px-8 py-4 my-2 bg-red-100`}>
             <div className='flex items-center'>
               <img src={key[1].icon} alt={`${key[0]} icon`} className='h-6 w-6 mr-2'/>
               <p >{`${key[0]}`}</p>
@@ -48,7 +58,15 @@ const WebsitesList: React.FC = () => {
             <div className='flex items-center'>{`${Math.floor(key[1].time / 3600).toString().padStart(2, "0")}:${Math.floor((key[1].time % 3600) / 60).toString().padStart(2, "0")}:${(key[1].time % 60).toString().padStart(2, "0")}`}</div>
           </ul>);
       })}
-      {Object.keys(websiteList).length > MAX_SHOWN_ITEMS ? <div>Show More</div> : <></>}
+      {Object.keys(websiteList).length > MAX_SHOWN_ITEMS 
+        ? <button onClick={() => {
+            chrome.tabs.create({
+              url: "js/newTab.html"
+            });
+          }}>
+            Show More
+          </button> 
+        : <></>}
     </div>
   );
 }
