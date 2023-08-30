@@ -5,7 +5,7 @@ interface WebsiteData {
   [key: string]: SiteInfo
 }
 
-const MAX_SHOWN_ITEMS = 5;
+const MAX_SHOWN_ITEMS = 3;
 
 const WebsitesList: React.FC = () => {
   const [websiteList, setWebsiteList] = useState<WebsiteData>({});
@@ -36,26 +36,27 @@ const WebsitesList: React.FC = () => {
     });
   };
 
+
   return(
-    <div>
+    <div className="w-full">
       { websiteList[currentUrl] &&
-        <ul className={"flex justify-between px-8 py-4 my-2 bg-red-100 font-bold border"}>
-          <div className='flex items-center'>
+        <ul className="flex justify-between px-8 py-4 my-2 bg-red-100 font-bold border">
+          <div className='flex items-center overflow-hidden'>
             <img src={websiteList[currentUrl].icon} alt={`${currentUrl} active icon`} className='h-6 w-6 mr-2'/>
-            <p >{currentUrl}</p>
+            <p className="overflow-hidden">{currentUrl}</p>
           </div>
-          <div className='flex items-center'>{`${Math.floor(websiteList[currentUrl].time / 3600).toString().padStart(2, "0")}:${Math.floor((websiteList[currentUrl].time % 3600) / 60).toString().padStart(2, "0")}:${(websiteList[currentUrl].time % 60).toString().padStart(2, "0")}`}</div>
+          <div className='flex items-center ml-2'>{`${Math.floor(websiteList[currentUrl].time / 3600).toString().padStart(2, "0")}:${Math.floor((websiteList[currentUrl].time % 3600) / 60).toString().padStart(2, "0")}:${(websiteList[currentUrl].time % 60).toString().padStart(2, "0")}`}</div>
         </ul>
       }
       <h1>Top {Math.min(Object.keys(websiteList).length, MAX_SHOWN_ITEMS)} sites</h1>
       {Object.entries(websiteList).sort(([,a],[,b]) => b.time-a.time).slice(0, MAX_SHOWN_ITEMS).map((key) => {
         return (          
-          <ul className={`flex justify-between px-8 py-4 my-2 bg-red-100`}>
-            <div className='flex items-center'>
+          <ul className="flex justify-between px-8 py-4 my-2 bg-red-100">
+            <div className='flex items-center overflow-hidden'>
               <img src={key[1].icon} alt={`${key[0]} icon`} className='h-6 w-6 mr-2'/>
               <p >{`${key[0]}`}</p>
             </div>
-            <div className='flex items-center'>{`${Math.floor(key[1].time / 3600).toString().padStart(2, "0")}:${Math.floor((key[1].time % 3600) / 60).toString().padStart(2, "0")}:${(key[1].time % 60).toString().padStart(2, "0")}`}</div>
+            <div className='flex items-center ml-2'>{`${Math.floor(key[1].time / 3600).toString().padStart(2, "0")}:${Math.floor((key[1].time % 3600) / 60).toString().padStart(2, "0")}:${(key[1].time % 60).toString().padStart(2, "0")}`}</div>
           </ul>);
       })}
       {Object.keys(websiteList).length > MAX_SHOWN_ITEMS 
