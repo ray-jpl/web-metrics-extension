@@ -31,8 +31,12 @@ const WebsitesList: React.FC = () => {
   }
 
   function loadData() {
-    chrome.storage.local.get(null, function (data) {
-      setWebsiteList(data);
+    chrome.storage.local.get("currentData", function (data) {
+      if (data.currentData) {
+        setWebsiteList(data.currentData);
+      } else {
+        setWebsiteList({});
+      }
     });
   };
 

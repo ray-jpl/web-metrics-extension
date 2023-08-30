@@ -1,5 +1,11 @@
 import { SiteInfo } from "../types";
 
+// Constants
+const PREFIX = "www.";
+const CURRENT_DATA = "currentData"; 
+const RESET_TIME = "resetTime";
+
+
 // Only transmit messages if popup is open
 let isPopupOpen = false;
 chrome.runtime.onConnect.addListener((port) => {
@@ -12,7 +18,6 @@ chrome.runtime.onConnect.addListener((port) => {
     }
 });
 
-var PREFIX = "www.";
 // Function to update the time spent on each website every second
 function updateWebsiteTimes() {
   resetDataOnNewDay();
@@ -23,14 +28,22 @@ function updateWebsiteTimes() {
       if (url.startsWith(PREFIX)) {
         url = url.slice(PREFIX.length);
       }
-      chrome.storage.local.get(url, function (result) {
-        const siteInfo = result[url];
+      
+      chrome.storage.local.get([CURRENT_DATA], (result) => {
+        let websiteDataList: { [url: string]: SiteInfo } = {};
+        if (result != null && result.currentData != null) {
+          websiteDataList = result.currentData;
+        }
+
+        let siteInfo: SiteInfo = websiteDataList[url];
         let curData: SiteInfo = {
           icon: (currentTab.favIconUrl != null) ? currentTab.favIconUrl : "../document.svg",
           time: (siteInfo && siteInfo.time) ? siteInfo.time + 1 : 1,
         };
 
-        chrome.storage.local.set({ [url]: curData }, function() {
+        websiteDataList[url] = curData;
+
+        chrome.storage.local.set({ [CURRENT_DATA]: websiteDataList }, function() {
           if (isPopupOpen) {
             chrome.runtime.sendMessage({ url: url, data: curData });
           }
@@ -40,18 +53,38 @@ function updateWebsiteTimes() {
   });
 }
 
+// Initialise a reset time if it doesnt exist
+chrome.storage.local.get([RESET_TIME], (result) => {
+  if (result == null || result[RESET_TIME] == null) {
+    setResetTime();
+  }
+});
+
 // Function resets when date rolls over. 
 // Use actual date object to avoid cases when the week/month roll over.
-let initDate = new Date();
-let resetTime = initDate;
-resetTime.setHours(0, 0, 0, 0);
-resetTime.setDate(resetTime.getDate() + 1);
+// Resets at midnight the following day.
+function setResetTime() {
+  let resetTime = new Date();
+  resetTime.setHours(0, 0, 0, 0);
+  resetTime.setDate(resetTime.getDate() + 1);
+  chrome.storage.local.set({ [RESET_TIME]: resetTime.toJSON() });
+}
+
 function resetDataOnNewDay() {
-  let currentTime = new Date();
-  if (currentTime >= resetTime) {
-    chrome.storage.local.clear();
-    resetTime.setDate(resetTime.getDate() + 1);
-  }
+  chrome.storage.local.get([RESET_TIME], (result) => {
+    if (result == null || result[RESET_TIME] == null) {
+      setResetTime();
+    } else {
+      const storedJSONDate = result[RESET_TIME];
+      const resetTime = new Date(storedJSONDate);
+      let currentTime = new Date();
+      if (currentTime >= resetTime) {
+        chrome.storage.local.remove([CURRENT_DATA]);
+        // Reset from current day as user may not be online every day
+        setResetTime()
+      }
+    }
+  });
 }
 
 // Start the time tracking when the extension is installed or updated

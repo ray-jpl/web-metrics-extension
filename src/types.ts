@@ -1,4 +1,4 @@
 export interface SiteInfo {
-  icon?: string;
+  icon: string;
   time: number;
 }
