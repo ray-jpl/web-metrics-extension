@@ -15,6 +15,7 @@ chrome.runtime.onConnect.addListener((port) => {
 var PREFIX = "www.";
 // Function to update the time spent on each website every second
 function updateWebsiteTimes() {
+  resetDataOnNewDay();
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     var currentTab = tabs[0];
     if (currentTab && currentTab.url && currentTab.url.startsWith("http")) {
@@ -25,7 +26,7 @@ function updateWebsiteTimes() {
       chrome.storage.local.get(url, function (result) {
         const siteInfo = result[url];
         let curData: SiteInfo = {
-          icon: (currentTab.favIconUrl != null) ? currentTab.favIconUrl : "",
+          icon: (currentTab.favIconUrl != null) ? currentTab.favIconUrl : "../document.svg",
           time: (siteInfo && siteInfo.time) ? siteInfo.time + 1 : 1,
         };
 
@@ -37,6 +38,20 @@ function updateWebsiteTimes() {
       });
     }
   });
+}
+
+// Function resets when date rolls over. 
+// Use actual date object to avoid cases when the week/month roll over.
+let initDate = new Date();
+let resetTime = initDate;
+resetTime.setHours(0, 0, 0, 0);
+resetTime.setDate(resetTime.getDate() + 1);
+function resetDataOnNewDay() {
+  let currentTime = new Date();
+  if (currentTime >= resetTime) {
+    chrome.storage.local.clear();
+    resetTime.setDate(resetTime.getDate() + 1);
+  }
 }
 
 // Start the time tracking when the extension is installed or updated
