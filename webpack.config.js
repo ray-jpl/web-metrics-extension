@@ -8,7 +8,7 @@ module.exports = {
     entry: {
         index: "./src/index.tsx",
         background: "./src/background/background.ts",
-        newTab: "./src/tabs/index.tsx"
+        dashboard: "./src/tabs/index.tsx"
     },
     mode: "production",
     module: {
@@ -57,7 +57,7 @@ module.exports = {
         }),
         ...getHtmlPlugins([
           "index",
-          "newTab"
+          "dashboard"
         ]),
     ],
     resolve: {

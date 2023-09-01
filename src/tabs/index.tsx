@@ -1,15 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import '../App.css';
-import WebsitesList from '../components/WebsiteList';
+import Dashboard from './Dashboard';
 
 const root = document.createElement("div")
-root.className = "container"
+root.className = "w-full h-full"
 document.body.appendChild(root)
 const rootDiv = ReactDOM.createRoot(root);
 rootDiv.render(  
   <React.StrictMode>
-    <p>This is a new tab</p>
-    <WebsitesList/>
+    <Dashboard/>
   </React.StrictMode>
 );
