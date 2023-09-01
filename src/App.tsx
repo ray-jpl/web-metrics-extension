@@ -1,16 +1,15 @@
 import './App.css';
+import PopupHeader from './components/PopupHeader';
 import WebsitesList from './components/WebsiteList';
 
 
 function App() {
   return (
-    <>
+    <div className="w-96 h-96 flex flex-col bg-background text-text font-sans">
       <link rel="stylesheet" href="https://rsms.me/inter/inter.css"></link>
-      <div className="text-center w-96 bg-background text-text font-sans">
-        <h1 className='text-accent font-bold text-lg tracking-tighter'>Web Metrics</h1>
+        <PopupHeader/>
         <WebsitesList/>
-      </div>
-    </>
+    </div>
   );
 }
 
