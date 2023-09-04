@@ -87,11 +87,8 @@ function resetDataOnNewDay() {
   });
 }
 
-// Start the time tracking when the extension is installed or updated
-chrome.runtime.onInstalled.addListener(function () {
-  console.log("START");
-  setInterval(updateWebsiteTimes, 1000);
-});
+// Start the time tracking when browser is active
+setInterval(updateWebsiteTimes, 1000);
 
 export { };
 
