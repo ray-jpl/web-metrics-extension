@@ -12,7 +12,7 @@ const SiteMenuItem = ({
 }) => {
   return (
     <li>
-      <a href="js/dashboard.html" className={`flex justify-between px-8 py-6 text-sm hover:bg-[#f7f9f9] ${focus && "font-bold rounded-lg"}`}>
+      <a href="#/page" className={`flex justify-between px-8 py-6 text-sm hover:bg-[#f7f9f9] ${focus && "font-bold rounded-lg"}`}>
         <div className='flex items-center overflow-hidden'>
           <img src={icon} alt={`${url} icon`} className='h-6 w-6 mr-2'/>
           <p >{`${url}`}</p>

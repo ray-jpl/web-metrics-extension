@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import '../App.css';
 import Dashboard from './Dashboard';
 
@@ -10,8 +10,8 @@ document.body.appendChild(root)
 const rootDiv = ReactDOM.createRoot(root);
 rootDiv.render(  
   <React.StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <Dashboard/>
-    </BrowserRouter>
+    </HashRouter>
   </React.StrictMode>
 );

@@ -1,5 +1,8 @@
 import { Route, Routes } from "react-router-dom";
+import NotFound from "../components/NotFound";
+import Settings from "../components/Settings";
 import Sidebar from "../components/Sidebar";
+import SiteDashboard from "../components/SiteDashboard";
 import Home from "./Home";
 
 const Dashboard = () => {
@@ -11,9 +14,12 @@ const Dashboard = () => {
       
       <main className="bg-[#f8f9fa] block flex-grow">
         <Routes>
-          <Route path="/js/dashboard.html" element={<Home/>}> 
-            <Route path="page" element={<div>NEW PAGE</div>} />
+          <Route path="/">
+            <Route index element={<Home/>}/>
+            <Route path="page" element={<SiteDashboard/>} />
+            <Route path="settings" element={<Settings/>} />
           </Route>
+          <Route path="*" element={<NotFound/>}/>
         </Routes>
       </main>
     </div>
