@@ -47,17 +47,19 @@ const Home = () => {
 
   return (
     <div className='h-full flex flex-col items-center overflow-y-scroll'>
-      <div className="flex justify-start mt-5">
-        <h1 className="text-lg font-semibold">Home</h1>
+      <div className="flex justify-start mt-5 relative top-0 w-full md:px-10">
+        <h1 className="text-xl font-semibold">Home</h1>
       </div>
       
-      <div className="w-1/2 mt-5 h-1/2">
+      <div className="w-1/2 my-5 h-2/3">
         <ul className="h-full overflow-y-scroll bg-white rounded-lg border-2 border-zinc-200 my-4">
           {Object.entries(websiteList).sort(([,a],[,b]) => b.time-a.time).map((key) => {
             return (<SiteMenuItem icon={key[1].icon} url={key[0]} time={key[1].time}/>)
           })}
         </ul>
       </div>
+
+
     </div>
   )
 }
