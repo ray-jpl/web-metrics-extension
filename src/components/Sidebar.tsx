@@ -24,7 +24,6 @@ const routes = [
 
 const Sidebar = () => {
   let location = useLocation();
-  console.log(location.pathname);
   return (
     <div className="space-y-4 py-4 flex flex-col h-full border-r-2 border-zinc-200">
       <div className='px-3 py-2 flex-1'>
