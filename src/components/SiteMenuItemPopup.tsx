@@ -11,8 +11,7 @@ const SiteMenuItemPopup = ({
   focus?: boolean
 }) => {
   let rawParams = {
-    url: url,
-    icon: icon
+    url: url
   }
   let params = new URLSearchParams(rawParams);
 
