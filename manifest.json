@@ -4,7 +4,7 @@
   "name": "Time Tracker",
   "description": "Track time spent on each website",
   "action": {
-      "default_popup": "js/index.html",
+      "default_popup": "index.html",
       "default_title": "React Chrome Extension",
       "default_icon": {
         "16": "icon.png",
@@ -18,6 +18,6 @@
     "nativeMessaging"
   ],
   "background": {
-    "service_worker": "js/background.js"
+    "service_worker": "background.js"
   }
 }
