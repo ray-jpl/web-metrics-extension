@@ -57,7 +57,7 @@ const WebsitesList: React.FC = () => {
         </ul>
         
       }
-      <ul className="overflow-y-scroll bg-white rounded-lg border-2 border-zinc-200 my-4">
+      <ul className="w-full overflow-y-scroll bg-white rounded-lg border-2 border-zinc-200 my-4">
         {Object.entries(websiteList).sort(([,a],[,b]) => b.time-a.time).slice(0, MAX_SHOWN_ITEMS).map((key) => {
           return (<SiteMenuItemPopup icon={key[1].icon} url={key[0]} time={key[1].time}/>)
         })}
