@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SiteInfo } from '../types';
-import SiteMenuItem from './SiteMenuItem';
+import SiteMenuItemPopup from './SiteMenuItemPopup';
 
 interface WebsiteData {
   [key: string]: SiteInfo
@@ -53,13 +53,13 @@ const WebsitesList: React.FC = () => {
     <div className="flex w-full h-full flex-col bg-inherit items-center px-4">
       { websiteList[currentUrl] &&
         <ul className="w-full bg-white rounded-lg border-2 border-zinc-200 mt-4">
-          <SiteMenuItem icon={websiteList[currentUrl].icon} url={currentUrl} time={websiteList[currentUrl].time} focus/>
+          <SiteMenuItemPopup icon={websiteList[currentUrl].icon} url={currentUrl} time={websiteList[currentUrl].time} focus/>
         </ul>
         
       }
       <ul className="overflow-y-scroll bg-white rounded-lg border-2 border-zinc-200 my-4">
         {Object.entries(websiteList).sort(([,a],[,b]) => b.time-a.time).slice(0, MAX_SHOWN_ITEMS).map((key) => {
-          return (<SiteMenuItem icon={key[1].icon} url={key[0]} time={key[1].time}/>)
+          return (<SiteMenuItemPopup icon={key[1].icon} url={key[0]} time={key[1].time}/>)
         })}
         
         {Object.keys(websiteList).length > MAX_SHOWN_ITEMS &&

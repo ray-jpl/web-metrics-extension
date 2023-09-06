@@ -9,7 +9,7 @@ const PopupHeader = () => {
         <button 
           onClick={() => {
             chrome.tabs.create({
-              url: "js/dashboard.html"
+              url: "dashboard.html"
             }); 
           }}
           className="rounded-full p-1 hover:bg-zinc-200"
@@ -20,7 +20,7 @@ const PopupHeader = () => {
         <button 
           onClick={() => {
             chrome.tabs.create({
-              url: "js/dashboard.html"
+              url: "dashboard.html/settings"
             }); 
           }}
           className="rounded-full p-1 hover:bg-zinc-200"
