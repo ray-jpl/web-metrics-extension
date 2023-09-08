@@ -88,7 +88,10 @@ function resetDataOnNewDay() {
 }
 
 // Start the time tracking when browser is active
-setInterval(updateWebsiteTimes, 1000);
+chrome.runtime.onStartup.addListener( () => {
+  setInterval(updateWebsiteTimes, 1000);
+});
+
 
 export { };
 
