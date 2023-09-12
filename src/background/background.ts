@@ -5,13 +5,11 @@ const PREFIX = "www.";
 const CURRENT_DATA = "currentData"; 
 const RESET_TIME = "resetTime";
 
-
 // Only transmit messages if popup is open
 let isPopupOpen = false;
 chrome.runtime.onConnect.addListener((port) => {
     if (port.name === "popup") {
         isPopupOpen = true;
-
         port.onDisconnect.addListener(() => {
             isPopupOpen = false;
         });
@@ -53,13 +51,6 @@ function updateWebsiteTimes() {
   });
 }
 
-// Initialise a reset time if it doesnt exist
-chrome.storage.local.get([RESET_TIME], (result) => {
-  if (result == null || result[RESET_TIME] == null) {
-    setResetTime();
-  }
-});
-
 // Function resets when date rolls over. 
 // Use actual date object to avoid cases when the week/month roll over.
 // Resets at midnight the following day.
@@ -89,6 +80,12 @@ function resetDataOnNewDay() {
 
 // Start the time tracking when browser is active
 chrome.runtime.onStartup.addListener( () => {
+  // Initialise a reset time if it doesnt exist
+  chrome.storage.local.get([RESET_TIME], (result) => {
+    if (result == null || result[RESET_TIME] == null) {
+      setResetTime();
+    }
+  });
   setInterval(updateWebsiteTimes, 1000);
 });
 
