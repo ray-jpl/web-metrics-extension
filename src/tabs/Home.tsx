@@ -47,7 +47,7 @@ const Home = () => {
 
   return (
     <div className='h-full flex flex-col items-center overflow-y-scroll'>
-      <div className="flex justify-start mt-5 relative top-0 w-full md:px-10">
+      <div className="flex justify-start mt-5 relative top-0 w-full md:mt-8 md:px-10">
         <h1 className="text-xl font-semibold">Home</h1>
       </div>
       
