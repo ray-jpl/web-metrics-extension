@@ -1,18 +1,17 @@
+import { CURRENT_DATA, RESET_TIME } from "../constants";
 import { SiteInfo } from "../types";
 
 // Constants
 const PREFIX = "www.";
-const CURRENT_DATA = "currentData"; 
-const RESET_TIME = "resetTime";
 
 // Only transmit messages if popup is open
 let isPopupOpen = false;
 chrome.runtime.onConnect.addListener((port) => {
     if (port.name === "popup") {
-        isPopupOpen = true;
-        port.onDisconnect.addListener(() => {
-            isPopupOpen = false;
-        });
+      isPopupOpen = true;
+      port.onDisconnect.addListener(() => {
+        isPopupOpen = false;
+      });
     }
 });
 
@@ -34,16 +33,23 @@ function updateWebsiteTimes() {
         }
 
         let siteInfo: SiteInfo = websiteDataList[url];
-        let curData: SiteInfo = {
-          icon: (currentTab.favIconUrl != null) ? currentTab.favIconUrl : "../document.svg",
-          time: (siteInfo && siteInfo.time) ? siteInfo.time + 1 : 1,
-        };
+        if (siteInfo == null) {
+          siteInfo = {
+            icon: "",
+            time: 0,
+          }
+        }
 
-        websiteDataList[url] = curData;
+        if (siteInfo.icon == "") {
+          siteInfo.icon = (currentTab.favIconUrl != null) ? currentTab.favIconUrl : "../document.svg";
+        }
+        // Increment Time
+        siteInfo.time += 1;
 
+        websiteDataList[url] = siteInfo;
         chrome.storage.local.set({ [CURRENT_DATA]: websiteDataList }, function() {
           if (isPopupOpen) {
-            chrome.runtime.sendMessage({ url: url, data: curData });
+            chrome.runtime.sendMessage({ url: url, data: siteInfo });
           }
         });
       });
@@ -88,7 +94,6 @@ chrome.runtime.onStartup.addListener( () => {
   });
   setInterval(updateWebsiteTimes, 1000);
 });
-
 
 export { };
 
