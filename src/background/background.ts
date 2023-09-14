@@ -54,10 +54,12 @@ function updateWebsiteTimes() {
 // Function resets when date rolls over. 
 // Use actual date object to avoid cases when the week/month roll over.
 // Resets at midnight the following day.
+// Reset Data at the same time the time is reset as events are linked
 function setResetTime() {
   let resetTime = new Date();
   resetTime.setHours(0, 0, 0, 0);
   resetTime.setDate(resetTime.getDate() + 1);
+  chrome.storage.local.remove([CURRENT_DATA]);
   chrome.storage.local.set({ [RESET_TIME]: resetTime.toJSON() });
 }
 
@@ -70,8 +72,6 @@ function resetDataOnNewDay() {
       const resetTime = new Date(storedJSONDate);
       let currentTime = new Date();
       if (currentTime >= resetTime) {
-        chrome.storage.local.remove([CURRENT_DATA]);
-        // Reset from current day as user may not be online every day
         setResetTime()
       }
     }
