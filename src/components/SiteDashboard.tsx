@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { SiteInfo } from "../types";
+import { USAGE_LIMIT } from "../constants";
+import { SiteInfo, UsageLimit } from "../types";
 import BarChartSqIcon from "./icons/BarChartSqIcon";
 
 const SiteDashboard = () => {
@@ -27,12 +28,32 @@ const SiteDashboard = () => {
     });
   }
 
+  function updateUsageLimit() {
+    let usageInSeconds = usageHours * 3600 + usageMins * 60
+    let usageLimit: UsageLimit = {
+      time: usageInSeconds 
+    };
+
+    chrome.storage.local.get(USAGE_LIMIT, (result) => {
+      let url = searchParams.get("url");
+      let websiteDataList: { [url: string]: UsageLimit } = {};
+      if (result != null && result[USAGE_LIMIT] != null) {
+        websiteDataList = result[USAGE_LIMIT];
+      }
+      
+      if (url != null) {
+        websiteDataList[url] = usageLimit;
+        chrome.storage.local.set({ [USAGE_LIMIT]: websiteDataList });
+      }
+    });
+  }
+
   return (
-    <div className="h-full">
+    <div>
       <div className="flex justify-start mt-5 mb-5 relative top-0 w-full px-4 md:mt-8 md:px-10">
         <div className="relative h-8 w-8 mr-2">
           <img
-            src={siteInfo?.icon}
+            src={siteInfo ? siteInfo.icon : "./document.svg"}
             alt="logo"
             className="w-full h-full"
           />
@@ -42,11 +63,11 @@ const SiteDashboard = () => {
       <div className="flex justify-center">
         <div className="w-full px-8 lg:w-[960px] lg:px-2 ">
           <div className="flex flex-col">
-            {siteInfo && 
-              <div className="flex justify-center mb-5">
-                <div className="text-3xl bg-white py-2 px-4 rounded-lg border-2 border-zinc-200">{`${Math.floor(siteInfo.time / 3600).toString().padStart(2, "0")}:${Math.floor((siteInfo.time % 3600) / 60).toString().padStart(2, "0")}:${(siteInfo.time % 60).toString().padStart(2, "0")}`}</div>
-              </div>
-            }
+
+            <div className="flex justify-center mb-5">
+              <div className="text-3xl bg-white py-2 px-4 rounded-lg border-2 border-zinc-200">{formatTimeString(siteInfo ? siteInfo.time : 0)}</div>
+            </div>
+            
             <div className="flex">
               <BarChartSqIcon className="h-6 w-6 mr-1"/>
               <h2 className="text-lg">Usage Limit</h2>
@@ -91,7 +112,9 @@ const SiteDashboard = () => {
                 </div>
               </div>
               <div className="flex items-end px-2">
-                <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-zinc-900 hover:bg-zinc-900/90 text-white h-8 px-4 py-2">
+                <button 
+                  onClick={() => {updateUsageLimit()}}
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-zinc-900 hover:bg-zinc-900/90 text-white h-8 px-4 py-2">
                   Save
                 </button>
               </div>
@@ -107,6 +130,10 @@ const SiteDashboard = () => {
       </div>
     </div>
   )
+}
+
+function formatTimeString(time: number) {
+  return `${Math.floor(time / 3600).toString().padStart(2, "0")}:${Math.floor((time % 3600) / 60).toString().padStart(2, "0")}:${(time % 60).toString().padStart(2, "0")}`;
 }
 
 export default SiteDashboard
