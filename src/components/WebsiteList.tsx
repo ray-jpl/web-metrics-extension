@@ -11,11 +11,11 @@ const MAX_SHOWN_ITEMS = 15;
 const WebsitesList: React.FC = () => {
   const [websiteList, setWebsiteList] = useState<WebsiteData>({});
   const [currentUrl, setCurrentUrl] = useState<string>("");
-  const port = chrome.runtime.connect({ name: "popup" });
 
   // Initial Load
   useEffect(() => {
     loadData();
+    chrome.runtime.connect({ name: "popup" });
   },[])
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const WebsitesList: React.FC = () => {
           <button 
             onClick={() => {
               chrome.tabs.create({
-                url: "js/dashboard.html"
+                url: "dashboard.html"
               }); 
             }}
             className='px-2 py-1 w-full text-accent hover:underline hover:bg-[#f7f9f9]'
