@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { USAGE_LIMIT } from "../constants";
+import { CURRENT_DATA, USAGE_LIMIT } from "../constants";
 import { SiteInfo, UsageLimit } from "../types";
 import BarChartSqIcon from "./icons/BarChartSqIcon";
 
 const SiteDashboard = () => {
   const [searchParams] = useSearchParams();
   const [siteInfo, setSiteInfo] = useState<SiteInfo>();
+  const [isUsageVisible, setIsUsageVisible] = useState<boolean>(false);
+  const [curUsageLimit, setCurUsageLimit] = useState<number>(0);
   const [usageHours, setUsageHours] = useState<number>(0);
   const [usageMins, setUsageMins] = useState<number>(0);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const url = searchParams.get("url") || "";
+    getUsageLimit();
     const interval = setInterval(() => {
-      chrome.storage.local.get("currentData", function (data) {
-        const url = searchParams.get("url") || "";
+      chrome.storage.local.get(CURRENT_DATA, (data) => {
         setSiteInfo(data.currentData[url]);
       });
     }, 1000);
@@ -26,6 +29,16 @@ const SiteDashboard = () => {
     navigate({
       pathname: '/*'
     });
+  }
+
+  function getUsageLimit() {
+    const url = searchParams.get("url");
+    chrome.storage.local.get(USAGE_LIMIT, (data) => {
+      if (url != null && data != null) {
+        setIsUsageVisible(true);
+        setCurUsageLimit(data[USAGE_LIMIT][url] ? data[USAGE_LIMIT][url].time : 0);
+      }
+    })
   }
 
   function updateUsageLimit() {
@@ -44,6 +57,24 @@ const SiteDashboard = () => {
       if (url != null) {
         websiteDataList[url] = usageLimit;
         chrome.storage.local.set({ [USAGE_LIMIT]: websiteDataList });
+        getUsageLimit()
+      }
+    });
+  }
+
+  function deleteUsageLimit() {
+    chrome.storage.local.get(USAGE_LIMIT, (result) => {
+      let url = searchParams.get("url");
+      let websiteDataList: { [url: string]: UsageLimit } = {};
+      if (result != null && result[USAGE_LIMIT] != null) {
+        websiteDataList = result[USAGE_LIMIT];
+      }
+      
+      
+      if (url != null) {
+        delete websiteDataList[url];
+        chrome.storage.local.set({ [USAGE_LIMIT]: websiteDataList });
+        getUsageLimit()
       }
     });
   }
@@ -71,6 +102,9 @@ const SiteDashboard = () => {
             <div className="flex">
               <BarChartSqIcon className="h-6 w-6 mr-1"/>
               <h2 className="text-lg">Usage Limit</h2>
+            </div>
+            <div className="flex justify-center mb-2">
+              <div className="text-3xl bg-white py-2 px-4 rounded-lg border-2 border-zinc-200">{formatTimeString(curUsageLimit)}</div>
             </div>
             <div className="flex justify-center">
               <div className="flex">
@@ -119,7 +153,9 @@ const SiteDashboard = () => {
                 </button>
               </div>
               <div className="flex items-end px-2">
-                <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-red-500 hover:bg-red-500/90 text-white h-8 px-4 py-2">
+                <button 
+                  onClick={() => {deleteUsageLimit()}}
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-red-500 hover:bg-red-500/90 text-white h-8 px-4 py-2">
                   Delete
                 </button>
               </div>

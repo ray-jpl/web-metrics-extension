@@ -1,4 +1,4 @@
-import { CURRENT_DATA, RESET_TIME } from "../constants";
+import { CURRENT_DATA, RESET_TIME, USAGE_LIMIT } from "../constants";
 import { SiteInfo } from "../types";
 
 // Constants
@@ -35,17 +35,27 @@ function updateWebsiteTimes() {
         let siteInfo: SiteInfo = websiteDataList[url];
         if (siteInfo == null) {
           siteInfo = {
-            icon: "",
+            icon: "../document.svg",
             time: 0,
           }
         }
 
-        if (siteInfo.icon == "") {
+        // Overwrite if possible
+        if (siteInfo.icon == "../document.svg") {
           siteInfo.icon = (currentTab.favIconUrl != null) ? currentTab.favIconUrl : "../document.svg";
         }
-        // Increment Time
-        siteInfo.time += 1;
 
+        // Check for usage Limit
+        chrome.storage.local.get(USAGE_LIMIT, (result) => {
+          console.log(result[USAGE_LIMIT][url])
+          if (result[USAGE_LIMIT][url] && result[USAGE_LIMIT][url].time <= siteInfo.time) {
+            console.log("OVERTIME")
+            // Block webpage here
+          } else {
+            siteInfo.time += 1;
+          }
+        })
+        
         websiteDataList[url] = siteInfo;
         chrome.storage.local.set({ [CURRENT_DATA]: websiteDataList }, function() {
           if (isPopupOpen) {
@@ -94,6 +104,5 @@ chrome.runtime.onStartup.addListener( () => {
   });
   setInterval(updateWebsiteTimes, 1000);
 });
-
 export { };
 
