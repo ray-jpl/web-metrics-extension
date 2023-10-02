@@ -17,7 +17,6 @@ chrome.runtime.onConnect.addListener((port) => {
 
 // Function to update the time spent on each website every second
 function updateWebsiteTimes() {
-  resetDataOnNewDay();
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     var currentTab = tabs[0];
     if (currentTab && currentTab.url && currentTab.url.startsWith("http")) {
@@ -25,6 +24,7 @@ function updateWebsiteTimes() {
       if (url.startsWith(PREFIX)) {
         url = url.slice(PREFIX.length);
       }
+      
       chrome.storage.local.get([CURRENT_DATA], (result) => {
         let websiteDataList: { [url: string]: SiteInfo } = {};
         if (result != null && result.currentData != null) {
@@ -90,6 +90,30 @@ function resetDataOnNewDay() {
     }
   });
 }
+
+// Ensure the alarm is set when the extension starts
+chrome.alarms.get("midnightAlarm", (alarm) => {
+  if (!alarm) {
+    // Find the time duration until midnight
+    const currentTime = Date.now()
+    const midnight = new Date()
+    midnight.setHours(24, 0, 0, 0)
+    const msUntilMidnight = midnight.getTime() - currentTime
+    // Create an alarm to update the storage every 24 hours at midnight
+    chrome.alarms.create("midnightAlarm", {
+      // When means the time the alarm will fire, so in this case it will fire at midnight
+      when: Date.now() + msUntilMidnight,
+      // Period means the time between each alarm firing, so in this case it will fire every 24 hours after the first midnight alarm
+      periodInMinutes: 24 * 60
+    })
+  }
+})
+
+// Update the storage and check if streak should be reset when the alarm is fired
+chrome.alarms.onAlarm.addListener(() => {
+  resetDataOnNewDay()
+})
+
 
 // Start the time tracking when browser is active
 chrome.runtime.onStartup.addListener( () => {
