@@ -25,7 +25,6 @@ function updateWebsiteTimes() {
       if (url.startsWith(PREFIX)) {
         url = url.slice(PREFIX.length);
       }
-      
       chrome.storage.local.get([CURRENT_DATA], (result) => {
         let websiteDataList: { [url: string]: SiteInfo } = {};
         if (result != null && result.currentData != null) {
@@ -47,21 +46,19 @@ function updateWebsiteTimes() {
 
         // Check for usage Limit
         chrome.storage.local.get(USAGE_LIMIT, (result) => {
-          console.log(result[USAGE_LIMIT][url])
           if (result[USAGE_LIMIT][url] && result[USAGE_LIMIT][url].time <= siteInfo.time) {
             console.log("OVERTIME")
             // Block webpage here
           } else {
             siteInfo.time += 1;
           }
+          websiteDataList[url] = siteInfo;
+          chrome.storage.local.set({ [CURRENT_DATA]: websiteDataList }, function() {
+            if (isPopupOpen) {
+              chrome.runtime.sendMessage({ url: url, data: siteInfo });
+            }
+          });
         })
-        
-        websiteDataList[url] = siteInfo;
-        chrome.storage.local.set({ [CURRENT_DATA]: websiteDataList }, function() {
-          if (isPopupOpen) {
-            chrome.runtime.sendMessage({ url: url, data: siteInfo });
-          }
-        });
       });
     }
   });
@@ -104,5 +101,6 @@ chrome.runtime.onStartup.addListener( () => {
   });
   setInterval(updateWebsiteTimes, 1000);
 });
+setInterval(updateWebsiteTimes, 1000);
 export { };
 
