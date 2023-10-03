@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import BarChartSqIcon from "./icons/BarChartSqIcon";
 import HomeIcon from "./icons/HomeIcon";
-import SettingsIcon from "./icons/SettingsIcon";
 
 const routes = [
   {
@@ -13,11 +12,6 @@ const routes = [
     label: "Usage Limits",
     icon: BarChartSqIcon,
     href: "/usage"
-  },
-  {
-    label: "Settings",
-    icon: SettingsIcon,
-    href: "/settings"
   }
 ]
 

@@ -1,5 +1,4 @@
 import HomeIcon from "./icons/HomeIcon";
-import SettingsIcon from "./icons/SettingsIcon";
 
 const PopupHeader = () => {
   return (
@@ -15,17 +14,6 @@ const PopupHeader = () => {
           className="rounded-full p-1 hover:bg-zinc-200"
         >
           <HomeIcon/>
-        </button>
-
-        <button 
-          onClick={() => {
-            chrome.tabs.create({
-              url: "dashboard.html/settings"
-            }); 
-          }}
-          className="rounded-full p-1 hover:bg-zinc-200"
-        >
-          <SettingsIcon/>
         </button>
       </div>
     </div>

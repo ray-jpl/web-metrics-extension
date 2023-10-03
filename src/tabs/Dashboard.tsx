@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import NotFound from "../components/NotFound";
-import Settings from "../components/Settings";
 import Sidebar from "../components/Sidebar";
 import SiteDashboard from "../components/SiteDashboard";
 import UsageDashboard from "../components/UsageDashboard";
@@ -18,7 +17,6 @@ const Dashboard = () => {
           <Route path="/">
             <Route index element={<Home/>}/>
             <Route path="page" element={<SiteDashboard/>} />
-            <Route path="settings" element={<Settings/>} />
             <Route path="usage" element={<UsageDashboard/>} />
           </Route>
           <Route path="*" element={<NotFound/>}/>
