@@ -1,5 +1,5 @@
 import { CURRENT_DATA, RESET_TIME, USAGE_LIMIT } from "../constants";
-import { SiteInfo } from "../types";
+import { SiteInfo, UsageLimit } from "../types";
 
 // Constants
 const PREFIX = "www.";
@@ -46,9 +46,14 @@ function updateWebsiteTimes() {
 
         // Check for usage Limit
         chrome.storage.local.get(USAGE_LIMIT, (result) => {
-          if (result[USAGE_LIMIT][url] && result[USAGE_LIMIT][url].time <= siteInfo.time) {
-            console.log("OVERTIME")
+          if (result && result[USAGE_LIMIT] && result[USAGE_LIMIT][url] && result[USAGE_LIMIT][url].time <= siteInfo.time) {
             // Block webpage here
+            result[USAGE_LIMIT][url].blocked = true;
+            chrome.storage.local.set({ [USAGE_LIMIT]:result[USAGE_LIMIT] }, () => {
+              setBlockedWebsites();
+              // Reload page to apply limit
+              chrome.tabs.reload();
+            });
           } else {
             siteInfo.time += 1;
           }
@@ -101,15 +106,15 @@ chrome.alarms.get("midnightAlarm", (alarm) => {
     const msUntilMidnight = midnight.getTime() - currentTime
     // Create an alarm to update the storage every 24 hours at midnight
     chrome.alarms.create("midnightAlarm", {
-      // When means the time the alarm will fire, so in this case it will fire at midnight
+      // When means the time the alarm will fire, so in this case at midnight
       when: Date.now() + msUntilMidnight,
-      // Period means the time between each alarm firing, so in this case it will fire every 24 hours after the first midnight alarm
+      // Time between each alarm firing, in this case every 24 hours after the first midnight alarm
       periodInMinutes: 24 * 60
     })
   }
 })
 
-// Update the storage and check if streak should be reset when the alarm is fired
+// Reset data at midnight
 chrome.alarms.onAlarm.addListener(() => {
   resetDataOnNewDay()
 })
@@ -126,5 +131,44 @@ chrome.runtime.onStartup.addListener( () => {
   setInterval(updateWebsiteTimes, 1000);
 });
 setInterval(updateWebsiteTimes, 1000);
+
+function setBlockedWebsites() {
+  chrome.storage.local.get(USAGE_LIMIT, (result) => {
+    if (result && result[USAGE_LIMIT]) {
+      let entries: {[key:string] : UsageLimit} = result[USAGE_LIMIT];
+      const rules: any[] = []
+      
+      Object.entries(entries).forEach(([url, usage], index) => {
+        if (usage.blocked == true) {
+          rules.push({
+            id: index + 1,
+            priority: 1,
+            action: {
+              type: "block"
+            },
+            condition: {
+              urlFilter: url,
+              resourceTypes: ["main_frame"]
+            }
+          });
+        }
+      });
+      try {
+        chrome.declarativeNetRequest.getDynamicRules((oldRules) => {
+          chrome.declarativeNetRequest.updateDynamicRules({ 
+            removeRuleIds: oldRules.map(rule => rule.id), 
+            // Type error for addRules, but it works
+            // @ts-ignore
+            addRules: rules
+          })
+        });
+        console.log("Redirect rule updated")
+      } catch (error) {
+        console.error("Error updating redirect rule:", error)
+      }
+    }
+  })
+}
+
 export { };
 
