@@ -3,6 +3,7 @@ import NotFound from "../components/NotFound";
 import Settings from "../components/Settings";
 import Sidebar from "../components/Sidebar";
 import SiteDashboard from "../components/SiteDashboard";
+import UsageDashboard from "../components/UsageDashboard";
 import Home from "./Home";
 
 const Dashboard = () => {
@@ -18,6 +19,7 @@ const Dashboard = () => {
             <Route index element={<Home/>}/>
             <Route path="page" element={<SiteDashboard/>} />
             <Route path="settings" element={<Settings/>} />
+            <Route path="usage" element={<UsageDashboard/>} />
           </Route>
           <Route path="*" element={<NotFound/>}/>
         </Routes>
