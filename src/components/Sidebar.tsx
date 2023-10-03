@@ -12,7 +12,7 @@ const routes = [
   {
     label: "Usage Limits",
     icon: BarChartSqIcon,
-    href: "/page"
+    href: "/usage"
   },
   {
     label: "Settings",
