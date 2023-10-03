@@ -43,14 +43,10 @@ module.exports = {
             patterns: [
                 { 
                   from: "manifest.json", 
-                  to: "../manifest.json" 
+                  to: path.resolve('dist')
                 },
                 {
-                  from: path.resolve('src/assets/icon.png'), 
-                  to: path.resolve('dist') 
-                },
-                {
-                  from: path.resolve('src/assets/document.svg'), 
+                  from: path.resolve('src/assets'), 
                   to: path.resolve('dist') 
                 }
             ],
