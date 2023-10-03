@@ -1,4 +1,4 @@
-import { CURRENT_DATA, RESET_TIME, USAGE_LIMIT } from "../constants";
+import { CURRENT_DATA, USAGE_LIMIT } from "../constants";
 import { SiteInfo, UsageLimit } from "../types";
 
 // Constants
@@ -55,6 +55,12 @@ function updateWebsiteTimes() {
               chrome.tabs.reload();
             });
           } else {
+            if (result[USAGE_LIMIT][url]?.blocked && result[USAGE_LIMIT][url] >= siteInfo.time) {
+              result[USAGE_LIMIT][url].blocked = false
+              chrome.storage.local.set({ [USAGE_LIMIT]:result[USAGE_LIMIT] }, () => {
+                setBlockedWebsites();
+              });
+            } 
             siteInfo.time += 1;
           }
           websiteDataList[url] = siteInfo;
@@ -65,33 +71,6 @@ function updateWebsiteTimes() {
           });
         })
       });
-    }
-  });
-}
-
-// Function resets when date rolls over. 
-// Use actual date object to avoid cases when the week/month roll over.
-// Resets at midnight the following day.
-// Reset Data at the same time the time is reset as events are linked
-function setResetTime() {
-  let resetTime = new Date();
-  resetTime.setHours(0, 0, 0, 0);
-  resetTime.setDate(resetTime.getDate() + 1);
-  chrome.storage.local.remove([CURRENT_DATA]);
-  chrome.storage.local.set({ [RESET_TIME]: resetTime.toJSON() });
-}
-
-function resetDataOnNewDay() {
-  chrome.storage.local.get([RESET_TIME], (result) => {
-    if (result == null || result[RESET_TIME] == null) {
-      setResetTime();
-    } else {
-      const storedJSONDate = result[RESET_TIME];
-      const resetTime = new Date(storedJSONDate);
-      let currentTime = new Date();
-      if (currentTime >= resetTime) {
-        setResetTime()
-      }
     }
   });
 }
@@ -116,18 +95,12 @@ chrome.alarms.get("midnightAlarm", (alarm) => {
 
 // Reset data at midnight
 chrome.alarms.onAlarm.addListener(() => {
-  resetDataOnNewDay()
+  chrome.storage.local.remove([CURRENT_DATA]);
 })
-
 
 // Start the time tracking when browser is active
 chrome.runtime.onStartup.addListener( () => {
   // Initialise a reset time if it doesnt exist
-  chrome.storage.local.get([RESET_TIME], (result) => {
-    if (result == null || result[RESET_TIME] == null) {
-      setResetTime();
-    }
-  });
   setInterval(updateWebsiteTimes, 1000);
 });
 setInterval(updateWebsiteTimes, 1000);
