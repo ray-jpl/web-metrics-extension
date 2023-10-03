@@ -45,31 +45,31 @@ function updateWebsiteTimes() {
         }
 
         // Check for usage Limit
-        chrome.storage.local.get(USAGE_LIMIT, (result) => {
+        chrome.storage.local.get(USAGE_LIMIT).then((result) => {
           if (result && result[USAGE_LIMIT] && result[USAGE_LIMIT][url] && result[USAGE_LIMIT][url].time <= siteInfo.time) {
             // Block webpage here
             result[USAGE_LIMIT][url].blocked = true;
-            chrome.storage.local.set({ [USAGE_LIMIT]:result[USAGE_LIMIT] }, () => {
+            chrome.storage.local.set({ [USAGE_LIMIT]:result[USAGE_LIMIT] }).then(() => {
               setBlockedWebsites();
               // Reload page to apply limit
               chrome.tabs.reload();
-            });
+            })
           } else {
-            if (result[USAGE_LIMIT][url]?.blocked && result[USAGE_LIMIT][url] >= siteInfo.time) {
+            if (result && result[USAGE_LIMIT] && result[USAGE_LIMIT][url]?.blocked && result[USAGE_LIMIT][url] >= siteInfo.time) {
               result[USAGE_LIMIT][url].blocked = false
-              chrome.storage.local.set({ [USAGE_LIMIT]:result[USAGE_LIMIT] }, () => {
+              chrome.storage.local.set({ [USAGE_LIMIT]:result[USAGE_LIMIT] }).then(() => {
                 setBlockedWebsites();
               });
             } 
             siteInfo.time += 1;
           }
           websiteDataList[url] = siteInfo;
-          chrome.storage.local.set({ [CURRENT_DATA]: websiteDataList }, function() {
+          chrome.storage.local.set({ [CURRENT_DATA]: websiteDataList }).then(() => {
             if (isPopupOpen) {
               chrome.runtime.sendMessage({ url: url, data: siteInfo });
             }
-          });
-        })
+          }) 
+        }) 
       });
     }
   });
@@ -93,17 +93,33 @@ chrome.alarms.get("midnightAlarm", (alarm) => {
   }
 })
 
+async function resetDataOnNewDay() {
+  return new Promise<void>((resolve, reject) => {
+    try {
+      chrome.storage.local.remove([CURRENT_DATA], () => {
+        resolve();
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 // Reset data at midnight
 chrome.alarms.onAlarm.addListener(() => {
-  chrome.storage.local.remove([CURRENT_DATA]);
+  resetDataOnNewDay();
+  // Reset blocks
+  chrome.declarativeNetRequest.getDynamicRules((oldRules) => {
+    chrome.declarativeNetRequest.updateDynamicRules({ 
+      removeRuleIds: oldRules.map(rule => rule.id), 
+    })
+  });
 })
 
 // Start the time tracking when browser is active
 chrome.runtime.onStartup.addListener( () => {
-  // Initialise a reset time if it doesnt exist
   setInterval(updateWebsiteTimes, 1000);
 });
-setInterval(updateWebsiteTimes, 1000);
 
 function setBlockedWebsites() {
   chrome.storage.local.get(USAGE_LIMIT, (result) => {
