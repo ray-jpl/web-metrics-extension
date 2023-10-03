@@ -58,10 +58,14 @@ const WebsitesList: React.FC = () => {
         
       }
       <ul className="w-full overflow-y-scroll bg-white rounded-lg border-2 border-zinc-200 my-4">
-        {Object.entries(websiteList).sort(([,a],[,b]) => b.time-a.time).slice(0, MAX_SHOWN_ITEMS).map((key) => {
-          return (<SiteMenuItemPopup icon={key[1].icon} url={key[0]} time={key[1].time}/>)
-        })}
-        
+        {Object.keys(websiteList).length == 0
+          ? <div className='flex justify-center items-center font-bold py-6'>
+              <p>No websites visited yet!</p>
+            </div> 
+          : Object.entries(websiteList).sort(([,a],[,b]) => b.time-a.time).slice(0, MAX_SHOWN_ITEMS).map((key) => {
+              return (<SiteMenuItemPopup icon={key[1].icon} url={key[0]} time={key[1].time}/>)
+            })
+        }
         {Object.keys(websiteList).length > MAX_SHOWN_ITEMS &&
           <button 
             onClick={() => {

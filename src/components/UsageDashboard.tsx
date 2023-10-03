@@ -47,9 +47,15 @@ const UsageDashboard = () => {
       
       <div className="w-1/2 my-5 h-2/3">
         <ul className="h-full overflow-y-scroll bg-white rounded-lg border-2 border-zinc-200 my-4">
-          {Object.entries(usageList).sort(([,a],[,b]) => b.time-a.time).map((key) => {
-            return (<SiteMenuItem icon={websiteList[key[0]].icon} url={key[0]} time={key[1].time}/>)
-          })}
+          {Object.entries(usageList).length == 0 
+            ? <div className='h-full flex justify-center items-center font-bold text-xl'>
+                <p>No websites visited yet!</p>
+              </div> 
+            : Object.entries(usageList).sort(([,a],[,b]) => b.time-a.time).map((key) => {
+                return (<SiteMenuItem icon={websiteList[key[0]].icon} url={key[0]} time={key[1].time}/>)
+              })
+          }
+          
         </ul>
       </div>
 
