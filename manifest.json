@@ -13,9 +13,12 @@
       }
   },
   "permissions": [
+    "alarms",
     "storage",
     "tabs",
-    "nativeMessaging"
+    "nativeMessaging",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback"
   ],
   "background": {
     "service_worker": "background.js"
