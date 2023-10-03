@@ -3,7 +3,15 @@ import HomeIcon from "./icons/HomeIcon";
 const PopupHeader = () => {
   return (
     <div className="flex justify-between items-center p-2 border-b-2 border-zinc-200 bg-white">
-      <h1 className='text-accent font-bold text-lg tracking-tighter'>Web Metrics</h1>
+      <button 
+        onClick={() => {
+          chrome.tabs.create({
+            url: "dashboard.html"
+          }); 
+        }}
+      >
+        <h1 className='text-accent font-bold text-lg tracking-tighter'>Web Metrics</h1>
+      </button>
       <div>
         <button 
           onClick={() => {

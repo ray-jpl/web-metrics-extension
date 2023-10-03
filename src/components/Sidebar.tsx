@@ -24,11 +24,11 @@ const Sidebar = () => {
         <Link to="/dashboard.html" className='flex items-center pl-3 mb-14'>
           <div className="relative h-8 w-8 mr-4">
             <img
-              src="../icon.png"
+              src="../logo_icon@96w.png"
               alt="logo"
             />
           </div>
-          <h1 className="text-2xl font-bold">Web Metrics</h1>
+          <h1 className="text-accent text-2xl font-bold tracking-tight">Web Metrics</h1>
         </Link>
         <div className='space-y-1'>
           {routes.map((route) => (
