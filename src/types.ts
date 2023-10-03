@@ -5,4 +5,5 @@ export interface SiteInfo {
 
 export interface UsageLimit {
   time: number;
+  blocked?: boolean;
 }
