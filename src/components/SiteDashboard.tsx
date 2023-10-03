@@ -34,8 +34,12 @@ const SiteDashboard = () => {
   function getUsageLimit() {
     const url = searchParams.get("url");
     chrome.storage.local.get(USAGE_LIMIT, (data) => {
-      if (url != null && data != null) {
-        setIsUsageVisible(true);
+      if (url != null && data && data[USAGE_LIMIT]) {
+        if (data[USAGE_LIMIT][url]) {
+          setIsUsageVisible(true);
+        } else {
+          setIsUsageVisible(false);
+        }
         setCurUsageLimit(data[USAGE_LIMIT][url] ? data[USAGE_LIMIT][url].time : 0);
       }
     })
@@ -58,6 +62,7 @@ const SiteDashboard = () => {
         websiteDataList[url] = usageLimit;
         chrome.storage.local.set({ [USAGE_LIMIT]: websiteDataList });
         getUsageLimit()
+        setBlockedWebsites()
       }
     });
   }
@@ -75,6 +80,7 @@ const SiteDashboard = () => {
         delete websiteDataList[url];
         chrome.storage.local.set({ [USAGE_LIMIT]: websiteDataList });
         getUsageLimit()
+        setBlockedWebsites()
       }
     });
   }
@@ -104,68 +110,109 @@ const SiteDashboard = () => {
               <h2 className="text-lg">Usage Limit</h2>
             </div>
             <div className="flex justify-center mb-2">
-              <div className="text-3xl bg-white py-2 px-4 rounded-lg border-2 border-zinc-200">{formatTimeString(curUsageLimit)}</div>
+              <div className={`text-3xl bg-white py-2 px-4 rounded-lg border-2 border-zinc-200 ${!isUsageVisible ? "text-zinc-400" : "text-inherit"}`}>{formatTimeString(curUsageLimit)}</div>
             </div>
             <div className="flex justify-center">
-              <div className="flex">
-                <div className="flex flex-col px-2 text-xl w-24">
-                  <label htmlFor="hours" className="font-semibold py-1">Hours</label>
-                  <input 
-                    type="number" 
-                    name="hours" 
-                    value={usageHours}
-                    className="text-center"
-                    onChange={(e) => {
-                      let value = Number(e.target.value.replace(/[^\d]/,''));
-                      if (value < 0) {
-                        value = 0;
-                      } else if (value > 23) {
-                        value = 23
-                      }
-                      setUsageHours(value);
-                    }}
-                  />
+              {!isUsageVisible  
+                ? <>
+                    <div className="flex">
+                      <div className="flex flex-col px-2 text-xl w-24">
+                        <label htmlFor="hours" className="font-semibold py-1">Hours</label>
+                        <input 
+                          type="number" 
+                          name="hours" 
+                          value={usageHours}
+                          className="text-center"
+                          onChange={(e) => {
+                            let value = Number(e.target.value.replace(/[^\d]/,''));
+                            if (value < 0) {
+                              value = 0;
+                            } else if (value > 23) {
+                              value = 23
+                            }
+                            setUsageHours(value);
+                          }}
+                        />
+                      </div>
+                      <div className="flex flex-col px-2 text-xl w-24">
+                        <label htmlFor="mins" className="font-semibold py-1">Minutes</label>
+                        <input 
+                          type="number" 
+                          name="mins" 
+                          value={usageMins}
+                          className="text-center"
+                          onChange={(e) => {
+                            let value = Number(e.target.value.replace(/[^\d]/,''));
+                            if (value < 0) {
+                              value = 0;
+                            } else if (value > 59) {
+                              value = 59
+                            }
+                            setUsageMins(value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-end px-2">
+                      <button 
+                        onClick={() => {updateUsageLimit()}}
+                        className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-zinc-900 hover:bg-zinc-900/90 text-white h-8 px-4 py-2">
+                        Save
+                      </button>
+                    </div>
+                  </> 
+                : <div className="flex items-end px-2">
+                  <button 
+                    onClick={() => {deleteUsageLimit()}}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-red-500 hover:bg-red-500/90 text-white h-8 px-4 py-2">
+                    Delete
+                  </button>
                 </div>
-                <div className="flex flex-col px-2 text-xl w-24">
-                  <label htmlFor="mins" className="font-semibold py-1">Minutes</label>
-                  <input 
-                    type="number" 
-                    name="mins" 
-                    value={usageMins}
-                    className="text-center"
-                    onChange={(e) => {
-                      let value = Number(e.target.value.replace(/[^\d]/,''));
-                      if (value < 0) {
-                        value = 0;
-                      } else if (value > 59) {
-                        value = 59
-                      }
-                      setUsageMins(value);
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="flex items-end px-2">
-                <button 
-                  onClick={() => {updateUsageLimit()}}
-                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-zinc-900 hover:bg-zinc-900/90 text-white h-8 px-4 py-2">
-                  Save
-                </button>
-              </div>
-              <div className="flex items-end px-2">
-                <button 
-                  onClick={() => {deleteUsageLimit()}}
-                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-red-500 hover:bg-red-500/90 text-white h-8 px-4 py-2">
-                  Delete
-                </button>
-              </div>
+              }
             </div>
-            
           </div>
         </div>
       </div>
     </div>
   )
+}
+
+function setBlockedWebsites() {
+  chrome.storage.local.get(USAGE_LIMIT, (result) => {
+    if (result && result[USAGE_LIMIT]) {
+      let entries: {[key:string] : UsageLimit} = result[USAGE_LIMIT];
+      const rules: any[] = []
+      
+      Object.entries(entries).forEach(([url, usage], index) => {
+        if (usage.blocked == true) {
+          rules.push({
+            id: index + 1,
+            priority: 1,
+            action: {
+              type: "block"
+            },
+            condition: {
+              urlFilter: url,
+              resourceTypes: ["main_frame"]
+            }
+          });
+        }
+      });
+      try {
+        chrome.declarativeNetRequest.getDynamicRules((oldRules) => {
+          chrome.declarativeNetRequest.updateDynamicRules({ 
+            removeRuleIds: oldRules.map(rule => rule.id), 
+            // Type error for addRules, but it works
+            // @ts-ignore
+            addRules: rules
+          })
+        });
+        console.log("Redirect rule updated")
+      } catch (error) {
+        console.error("Error updating redirect rule:", error)
+      }
+    }
+  })
 }
 
 function formatTimeString(time: number) {
