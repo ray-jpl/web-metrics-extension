@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import SiteMenuItem from "../components/SiteMenuItem";
+import HomeIcon from '../components/icons/HomeIcon';
 import { SiteInfo } from '../types';
 
 interface WebsiteData {
@@ -48,6 +49,7 @@ const Home = () => {
   return (
     <div className='h-full flex flex-col items-center overflow-y-scroll'>
       <div className="flex justify-start mt-5 relative top-0 w-full md:mt-8 md:px-10">
+        <HomeIcon className="h-6 w-6 mr-1"/>
         <h1 className="text-xl font-semibold">Home</h1>
       </div>
       
