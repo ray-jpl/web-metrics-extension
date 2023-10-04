@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { CURRENT_DATA, USAGE_LIMIT } from "../constants";
 import { SiteInfo, UsageLimit } from "../types";
 import BarChartSqIcon from "./icons/BarChartSqIcon";
+import HourglassIcon from "./icons/HourglassIcon";
 
 const SiteDashboard = () => {
   const [searchParams] = useSearchParams();
@@ -48,6 +49,7 @@ const SiteDashboard = () => {
   function updateUsageLimit() {
     let usageInSeconds = usageHours * 3600 + usageMins * 60
     let usageLimit: UsageLimit = {
+      icon: siteInfo?.icon ? siteInfo.icon : "../document.svg",
       time: usageInSeconds 
     };
 
@@ -100,7 +102,10 @@ const SiteDashboard = () => {
       <div className="flex justify-center">
         <div className="w-full px-8 lg:w-[960px] lg:px-2 ">
           <div className="flex flex-col">
-
+            <div className="flex">
+              <HourglassIcon className="h-6 w-6 mr-1"/>
+              <h2 className="text-lg">Time Spent</h2>
+            </div>
             <div className="flex justify-center mb-5">
               <div className="text-3xl bg-white py-2 px-4 rounded-lg border-2 border-zinc-200">{formatTimeString(siteInfo ? siteInfo.time : 0)}</div>
             </div>

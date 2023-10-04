@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import SiteMenuItem from "../components/SiteMenuItem";
 import { CURRENT_DATA, USAGE_LIMIT } from '../constants';
 import { SiteInfo, UsageLimit } from '../types';
+import BarChartSqIcon from './icons/BarChartSqIcon';
 
 interface WebsiteData {
   [key: string]: SiteInfo
@@ -37,7 +38,8 @@ const UsageDashboard = () => {
 
   return (
     <div className='h-full flex flex-col items-center overflow-y-scroll'>
-      <div className="flex justify-start mt-5 relative top-0 w-full md:mt-8 md:px-10">
+      <div className="flex justify-start items-center mt-5 relative top-0 w-full md:mt-8 md:px-10">
+        <BarChartSqIcon className="h-6 w-6 mr-1"/>
         <h1 className="text-xl font-semibold">Usage Limits</h1>
       </div>
       
@@ -48,7 +50,7 @@ const UsageDashboard = () => {
                 <p>No usage limits set yet!</p>
               </div> 
             : Object.entries(usageList).sort(([,a],[,b]) => b.time-a.time).map((key) => {
-                return (<SiteMenuItem icon={websiteList[key[0]].icon} url={key[0]} time={key[1].time}/>)
+                return (<SiteMenuItem icon={key[1].icon} url={key[0]} time={key[1].time}/>)
               })
           }
           

@@ -4,6 +4,7 @@ export interface SiteInfo {
 }
 
 export interface UsageLimit {
+  icon: string;
   time: number;
   blocked?: boolean;
 }
