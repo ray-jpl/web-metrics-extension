@@ -1,5 +1,5 @@
-import { CURRENT_DATA, USAGE_LIMIT } from "../constants";
-import { SiteInfo, UsageLimit } from "../types";
+import { CURRENT_DATA, USAGE_LIMIT } from "./constants";
+import { SiteInfo, UsageLimit } from "./types";
 
 // Constants
 const PREFIX = "www.";
@@ -116,11 +116,6 @@ chrome.alarms.onAlarm.addListener(() => {
   });
 })
 
-// Start the time tracking when browser is active
-chrome.runtime.onStartup.addListener( () => {
-  setInterval(updateWebsiteTimes, 1000);
-});
-
 function setBlockedWebsites() {
   chrome.storage.local.get(USAGE_LIMIT, (result) => {
     if (result && result[USAGE_LIMIT]) {
@@ -158,6 +153,16 @@ function setBlockedWebsites() {
     }
   })
 }
+
+// Start the time tracking when browser is active
+chrome.runtime.onStartup.addListener(() => {
+  setInterval(updateWebsiteTimes, 1000);
+});
+setInterval(updateWebsiteTimes, 1000);
+
+const keepAlive = () => setInterval(chrome.runtime.getPlatformInfo, 5e3);
+chrome.runtime.onStartup.addListener(keepAlive);
+keepAlive();
 
 export { };
 
