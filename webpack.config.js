@@ -7,7 +7,7 @@ const autoprefixer = require("autoprefixer");
 module.exports = {
     entry: {
         index: "./src/index.tsx",
-        background: "./src/background/background.ts",
+        background: "./src/background.ts",
         dashboard: "./src/tabs/index.tsx"
     },
     mode: "production",
