@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "version": "1.0.0",
-  "name": "Time Tracker",
-  "description": "Track time spent on each website",
+  "name": "Web Metrics",
+  "description": "Track and manage the time you spend browsing the web!",
   "action": {
       "default_popup": "index.html",
       "default_title": "React Chrome Extension",
