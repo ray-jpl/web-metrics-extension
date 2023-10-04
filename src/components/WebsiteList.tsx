@@ -16,14 +16,11 @@ const WebsitesList: React.FC = () => {
   useEffect(() => {
     loadData();
     chrome.runtime.connect({ name: "popup" });
-  },[])
-
-  useEffect(() => {
     window.addEventListener("focus", loadData);
     return () => {
       window.removeEventListener("focus", loadData);
     };
-  }, []);
+  },[])
 
   // When React refreshes the popup just adds a new listener, taking more CPU
   // Hence we need to check if listeners already exist

@@ -14,15 +14,11 @@ const UsageDashboard = () => {
   // Initial Load
   useEffect(() => {
     loadData();
-  },[])
-  
-  useEffect(() => {
     window.addEventListener("focus", loadData);
     return () => {
       window.removeEventListener("focus", loadData);
     };
-  }, []);
-  
+  },[])
 
   function loadData() {
     chrome.storage.local.get(CURRENT_DATA, (data) => {
