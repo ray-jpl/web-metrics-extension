@@ -25,7 +25,6 @@
     "alarms",
     "storage",
     "tabs",
-    "nativeMessaging",
     "declarativeNetRequest",
     "declarativeNetRequestFeedback"
   ],
