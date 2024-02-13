@@ -4,6 +4,8 @@ import { SiteInfo, UsageLimit } from "./types";
 // Constants
 const PREFIX = "www.";
 
+let updateInterval = setInterval(updateWebsiteTimes, 1000);
+
 // Only transmit messages if popup is open
 let isPopupOpen = false;
 chrome.runtime.onConnect.addListener((port) => {
@@ -96,6 +98,8 @@ chrome.alarms.get("midnightAlarm", (alarm) => {
 async function resetDataOnNewDay() {
   return new Promise<void>((resolve, reject) => {
     try {
+      clearInterval(updateInterval);
+      updateInterval = setInterval(updateWebsiteTimes, 1000);
       chrome.storage.local.remove([CURRENT_DATA], () => {
         resolve();
       });
@@ -156,9 +160,10 @@ function setBlockedWebsites() {
 
 // Start the time tracking when browser is active
 chrome.runtime.onStartup.addListener(() => {
-  setInterval(updateWebsiteTimes, 1000);
+  if (updateInterval == null) {
+    setInterval(updateWebsiteTimes, 1000);
+  }
 });
-setInterval(updateWebsiteTimes, 1000);
 
 const keepAlive = () => setInterval(chrome.runtime.getPlatformInfo, 5e3);
 chrome.runtime.onStartup.addListener(keepAlive);
